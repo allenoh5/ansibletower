@@ -1,0 +1,16 @@
+---
+- name: Run as root and change to standard demo password
+  hosts: all
+  vars: 
+    default_username: root
+  vars_files:
+    - vars/default_password.yml
+
+    - name: create user account
+      user:
+        name: "{{ default_username }}"
+        state: "present"
+        update_password: always
+        password: "{{ default_password }}"
+
+

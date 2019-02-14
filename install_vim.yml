@@ -1,0 +1,9 @@
+---
+ - name: Install vim on servers
+   hosts: all
+   tasks:
+   - name: Install vim
+     yum:
+       name: vim
+       state: latest
+       

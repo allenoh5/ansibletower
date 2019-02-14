@@ -1,0 +1,27 @@
+---
+ - name: Install and configure puppet on client 
+   hosts: all
+
+   tasks:
+   - name: Install puppet
+     yum:
+       name: puppet
+       state: latest
+
+   - name: add lines to puppet.conf
+     template:
+       src: templates/puppet.conf.j2
+       dest: /etc/puppetlabs/puppet/puppet.conf
+
+   - name: restart puppet
+     service: 
+       name: puppet
+       enabled: yes
+       state: restarted
+
+   - name: run puppet agent
+     shell: /usr/bin/puppet agent -t
+
+
+
+       

@@ -1,0 +1,35 @@
+---
+- name: Run as root and create user aoh and assign password
+  hosts: all
+  vars: 
+    default_username: aoh
+  vars_files:
+    - vars/default_password.yml
+
+  tasks: 
+    - name: create group admin
+      group:
+        name: admin
+        state: present
+
+    - name: create group aoh
+      group:
+        name: aoh
+        state: present
+
+    - name: create user account
+      user:
+        name: "{{ default_username }}"
+        state: "present"
+        groups: "admin,aoh"
+        update_password: always
+        password: "{{ default_password }}"
+        shell: /bin/bash
+
+    - name: "Allow admin users to sudo without a password"
+      lineinfile:
+        dest: "/etc/sudoers" # path: in version 2.3
+        state: "present"
+        regexp: "^%admin"
+        line: "%admin ALL=(ALL) NOPASSWD: ALL"
+

@@ -1,0 +1,11 @@
+---
+- name: Set up Satellite remote execution on clients
+  hosts: all
+
+  tasks:
+    - name: Get authorized keys for client from satellite for remote execution
+      authorized_key:
+        user: root
+        state: present
+        key: https://satellite1.aoh.lab:9090/ssh/pubkey
+
