@@ -1,0 +1,30 @@
+- name: Break system for CVE-2017-14491 (dnsmasq)
+  hosts: "{{HOSTS}}"
+  become: yes
+  vars:
+    vulnerable_version:
+      '6': 2.48-17.el6
+      '7': 2.76-2.el7
+
+  tasks:
+    - name: Get dnsmasq version
+      command: rpm -q --qf="%{VERSION}-%{RELEASE}" dnsmasq
+      register: installed_dnsmasq
+      ignore_errors: yes
+
+    - when: '"not installed" in installed_dnsmasq.stdout'
+      name: Install dnsmasq-{{vulnerable_version[ansible_distribution_major_version]}}
+      command: yum -y install dnsmasq-{{vulnerable_version[ansible_distribution_major_version]}}
+
+    - when: installed_dnsmasq.stdout | version_compare(vulnerable_version[ansible_distribution_major_version], '>')
+      name: Downgrade dnsmasq-{{vulnerable_version[ansible_distribution_major_version]}}
+      command: yum -y downgrade dnsmasq-{{vulnerable_version[ansible_distribution_major_version]}}
+
+    # Versions older than vulnerable_version are also vulnerable
+
+    - name: Start dnsmasq service
+      service:
+        name: dnsmasq
+        state: restarted
+        enabled: yes
+

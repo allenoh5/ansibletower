@@ -1,0 +1,15 @@
+- hosts: "{{HOSTS}}"
+  vars:
+    breakit: 
+      '6': 'httpd-2.2.15-53.el6 httpd-tools-2.2.15-53.el6 mod_ssl-2.2.15-53.el6'
+      '7': 'httpd-2.4.6-40.el7 httpd-tools-2.4.6-40.el7 mod_ssl-2.4.6-40.el7'
+    affected_httpd: "{{breakit[ansible_distribution_major_version]}}"
+
+  tasks:
+    - name: Downgrade httpd to affected version
+      shell: yum -y downgrade {{affected_httpd}}
+
+    - name: Restart httpd
+      service:
+        name: httpd
+        state: restarted
